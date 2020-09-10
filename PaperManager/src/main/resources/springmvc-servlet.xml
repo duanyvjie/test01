@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+    <!--多视图解析器-->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="favorParameter" value="true"/>
+        <!--网页视图解析器-->
+        <property name="viewResolvers"> 
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/jsp/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </property>
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html;charset=UTF-8"/>
+                <entry key="json" value="application/json;charset=UTF-8"/>
+                <entry key="xml" value="application/xml;charset=UTF-8"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--BeanNameUrlHandlerMapping（默认）将请求URL映射到同名的控制器Bean上-->
+    <!--DefaultAnnotationHandlerMapping将请求映射到标注@RequestMapping注解的控制器和处理方法上-->
+
+    <!--<bean id="/hello.html" class="com.hisoft.Controller.HelloController"/>-->
+
+    <!--扫描controller包下边有@controller注释的类-->
+    <context:component-scan base-package="com.hisoft.papermanager.controller"/>
+    <!--注解驱动-->
+    <mvc:annotation-driven conversion-service="myConverter">
+        <mvc:message-converters>
+            <!--解决JSON数据传递的中文乱码问题-->
+            <!--返回的对象是json类型时调用-->
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+            <!--FastJson规定了默认的返回日期类型DEFFAULT_DATE_FORMAT：yyyy-MM-dd HH:mm:ss故对于特殊类型字段，可使用@JSONField来控制-->
+            <!--返回的对象是object类型时调用-->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                    </list>
+                </property>
+                <property name="features">
+                    <list>
+                        <value>WriteDateUseDateFormat</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--过滤静态资源-->
+    <!--<mvc:resources mapping="/statics/**" location="/statics/"/>-->
+
+    <!--使用tomcat默认的servlet-->
+    <mvc:default-servlet-handler/>
+
+   <!-- 处理全局异常-->
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.RuntimeException">login</prop>
+            </props>
+        </property>
+    </bean>-->
+    <!--配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/**"/>
+            <mvc:mapping path="/paper/**"/>
+            <mvc:mapping path="/code/**"/>
+            <bean class="com.hisoft.papermanager.interceptor.SysInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="5000000"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="myConverter" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.hisoft.papermanager.util.StringtoDateConvert">
+                    <property name="pattern" value="yyyy-MM-dd"/>
+                </bean>
+            </set>
+        </property>
+    </bean>
+</beans>

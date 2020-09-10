@@ -1,0 +1,15 @@
+com\hisoft\papermanager\controller\LoginController.class
+com\hisoft\papermanager\util\Constants.class
+com\hisoft\papermanager\pojo\User.class
+com\hisoft\papermanager\pojo\Paper.class
+com\hisoft\papermanager\controller\PaperController.class
+com\hisoft\papermanager\service\user\UserService.class
+com\hisoft\papermanager\dao\paper\PaperMapper.class
+com\hisoft\papermanager\service\paper\PaperService.class
+com\hisoft\papermanager\util\PageSupport.class
+com\hisoft\papermanager\service\user\UserServiceImpl.class
+com\hisoft\papermanager\util\StringtoDateConvert.class
+com\hisoft\papermanager\pojo\Code.class
+com\hisoft\papermanager\service\paper\PaperServiceImpl.class
+com\hisoft\papermanager\interceptor\SysInterceptor.class
+com\hisoft\papermanager\dao\user\UserMapper.class

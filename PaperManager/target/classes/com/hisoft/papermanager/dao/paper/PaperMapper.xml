@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisoft.papermanager.dao.paper.PaperMapper">
+    <insert id="add" parameterType="Paper">
+       insert into t_paper(title,type,paperSummary,paperPath,createdBy,creationDate,fileName) values
+       (#{title},#{type},#{paperSummary},#{paperPath},#{createdBy},#{creationDate},#{fileName})
+
+    </insert>
+    <update id="modify" parameterType="Paper">
+        update t_paper
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="type != null and type>0">
+                type = #{type},
+            </if>
+            <if test="paperSummary != null and paperSummary != ''">
+                paperSummary = #{paperSummary},
+            </if>
+            <if test="modifyBy != null and modifyBy != ''">
+                modifyBy = #{modifyBy},
+            </if>
+            <if test="modifyDate != null">
+                modifyDate = #{modifyDate},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                fileName = #{fileName},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <delete id="delelte">
+        delete from t_paper where id = #{id}
+    </delete>
+
+    <select id="getPaperList" resultType="com.hisoft.papermanager.pojo.Paper">
+        select p.*,u.userName as author from t_paper p,t_user u where p.createdBy = u.id
+            <if test="title!=null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="type!=null and type!=0">
+                and type=#{type}
+            </if>
+            order by creationDate DESC limit #{from},#{pageSize}
+    </select>
+    <select id="getPaperCount" resultType="java.lang.Integer">
+        select count(1) as count from t_paper p,t_user u where p.createdBy = u.id
+
+            <if test="title!=null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="type!=null and type>0">
+                and type=#{type}
+            </if>
+
+    </select>
+    <select id="getCodeList" resultType="com.hisoft.papermanager.pojo.Code">
+        select * from t_code c
+    </select>
+    <select id="getPaperById" resultType="com.hisoft.papermanager.pojo.Paper">
+        select * from t_paper where id = #{id}
+    </select>
+    <select id="getPaperByTitle" resultType="com.hisoft.papermanager.pojo.Paper">
+        select * from t_paper where title = #{title}
+    </select>
+</mapper>
